@@ -1,0 +1,135 @@
+<div class="sidebar" [class.expanded]="isExpanded" (mouseenter)="expandSidebar()" (mouseleave)="collapseSidebar()">
+  <!-- Animated background -->
+  <div class="sidebar-background"></div>
+  
+  <div class="sidebar-header">
+    <div class="logo" (click)="navigateToHome()">
+      <div class="logo-icon">
+        <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="2" fill="none"/>
+          <circle cx="20" cy="20" r="8" fill="currentColor"/>
+          <circle cx="20" cy="20" r="4" fill="white"/>
+        </svg>
+      </div>
+      <span class="logo-text">AuroiQa</span>
+    </div>
+    <div class="expand-indicator">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <ul class="nav-list">
+      <li class="nav-item">
+        <button 
+          class="nav-link"
+          [class.active]="activeRoute === 'home'"
+          (click)="navigateToHome()"
+          [attr.data-tooltip]="'Dashboard Home'">
+          <div class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m0 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="nav-text">Dashboard Home</span>
+          <div class="nav-indicator"></div>
+        </button>
+      </li>
+      
+      <li class="nav-item">
+        <button 
+          class="nav-link"
+          [class.active]="activeRoute === 'glaucoma'"
+          (click)="navigateToGlaucoma()"
+          [attr.data-tooltip]="'Glaucoma Analytics'">
+          <div class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="12" r="6" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="12" r="2" fill="currentColor"/>
+            </svg>
+          </div>
+          <span class="nav-text">Glaucoma Analytics</span>
+          <div class="nav-indicator"></div>
+        </button>
+      </li>
+      
+      <li class="nav-item">
+        <button 
+          class="nav-link"
+          [class.active]="activeRoute === 'cataract'"
+          (click)="navigateToCataract()"
+          [attr.data-tooltip]="'Cataract Analytics'">
+          <div class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5z" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <span class="nav-text">Cataract Analytics</span>
+          <div class="nav-indicator"></div>
+        </button>
+      </li>
+
+      <li class="nav-item">
+        <button 
+          class="nav-link"
+          [class.active]="activeRoute === 'reports'"
+          (click)="navigateToReports()"
+          [attr.data-tooltip]="'Quality Reports'">
+          <div class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 17H7A2 2 0 015 15V7A2 2 0 017 5h10a2 2 0 012 2v2M9 17v2a2 2 0 002 2h8a2 2 0 002-2v-8a2 2 0 00-2-2h-2M9 17h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="nav-text">Quality Reports</span>
+          <div class="nav-indicator"></div>
+        </button>
+      </li>
+
+      <li class="nav-item">
+        <button 
+          class="nav-link"
+          [class.active]="activeRoute === 'settings'"
+          (click)="navigateToSettings()"
+          [attr.data-tooltip]="'Settings'">
+          <div class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+              <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <span class="nav-text">Settings</span>
+          <div class="nav-indicator"></div>
+        </button>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2"/>
+          <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="user-details">
+        <span class="user-name">Dr. Admin</span>
+        <span class="user-role">System Administrator</span>
+      </div>
+      <div class="logout-btn" (click)="logout()" [attr.data-tooltip]="'Logout'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4m7 14l5-5-5-5m5 5H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tooltip -->
+  <div class="tooltip" [style.top.px]="tooltipTop" [style.display]="tooltipText ? 'block' : 'none'">
+    {{ tooltipText }}
+  </div>
+</div>

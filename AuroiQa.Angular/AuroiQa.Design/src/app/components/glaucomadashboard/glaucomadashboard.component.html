@@ -1,0 +1,90 @@
+<div class="dashboard-container">
+  <app-sidebar [activeRoute]="activeRoute"></app-sidebar>
+  
+  <div class="main-content">
+    <div class="content-header">
+      <h1 class="page-title">Glaucoma Dashboard</h1>
+      <p class="page-subtitle">Monitor and analyze glaucoma surgery quality metrics</p>
+    </div>
+    
+    <div class="dashboard-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon glaucoma-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="12" r="6" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="12" r="2" fill="currentColor"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-number">1,245</h3>
+            <p class="stat-label">Total Procedures</p>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon success-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-number">94.2%</h3>
+            <p class="stat-label">Success Rate</p>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon warning-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-number">72</h3>
+            <p class="stat-label">Complications</p>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon patients-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-number">1,180</h3>
+            <p class="stat-label">Unique Patients</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="charts-section">
+        <div class="chart-card">
+          <h3 class="chart-title">IOP Reduction Analysis</h3>
+          <div class="chart-placeholder">
+            <p>Chart visualization will be implemented here</p>
+          </div>
+        </div>
+        
+        <div class="chart-card">
+          <h3 class="chart-title">Surgery Type Distribution</h3>
+          <div class="chart-placeholder">
+            <p>Chart visualization will be implemented here</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="recent-data-section">
+        <div class="data-card">
+          <h3 class="data-title">Recent Procedures</h3>
+          <div class="table-placeholder">
+            <p>Patient data table will be implemented here</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

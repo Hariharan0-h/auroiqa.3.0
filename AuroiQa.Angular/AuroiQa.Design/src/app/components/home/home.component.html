@@ -1,0 +1,269 @@
+<div class="dashboard-container">
+  <app-sidebar [activeRoute]="activeRoute"></app-sidebar>
+  
+  <div class="main-content">
+    <div class="content-header">
+      <div class="header-content">
+        <div class="header-text">
+          <h1 class="page-title">AuroiQa Dashboard</h1>
+          <p class="page-subtitle">Comprehensive Quality Assurance for Ophthalmic Procedures</p>
+        </div>
+        <div class="header-actions">
+          <button class="refresh-btn" (click)="refreshData()" [disabled]="loadingCataract || loadingGlaucoma">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M23 12c0 6.075-4.925 11-11 11s-11-4.925-11-11 4.925-11 11-11c3.038 0 5.789 1.235 7.786 3.232" stroke="currentColor" stroke-width="2"/>
+              <path d="M17 8l3-3-3-3" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Refresh Data
+          </button>
+        </div>
+      </div>
+      
+      <!-- System Health Indicator -->
+      <div class="health-indicator" *ngIf="!loadingCataract && !loadingGlaucoma">
+        <div class="health-score">
+          <div class="score-circle" [style.border-color]="getHealthScoreColor()">
+            <span class="score-value" [style.color]="getHealthScoreColor()">{{ getSystemHealthScore() | number:'1.1-1' }}%</span>
+          </div>
+          <div class="score-info">
+            <span class="score-label">System Health</span>
+            <span class="score-status" [style.color]="getHealthScoreColor()">{{ getHealthScoreLabel() }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="dashboard-content">
+      <!-- Overview Stats -->
+      <div class="overview-section">
+        <h2 class="section-title">System Overview</h2>
+        <div class="overview-grid">
+          <div class="overview-card total-procedures">
+            <div class="card-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="card-content">
+              <h3 class="card-number">
+                <span *ngIf="!loadingCataract && !loadingGlaucoma">{{ getTotalProcedures() | number }}</span>
+                <span *ngIf="loadingCataract || loadingGlaucoma" class="loading-text">Loading...</span>
+              </h3>
+              <p class="card-label">Total Procedures</p>
+              <p class="card-detail">All surgical interventions</p>
+            </div>
+          </div>
+          
+          <div class="overview-card total-patients">
+            <div class="card-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75M13 7a4 4 0 11-8 0 4 4 0 018 0z" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="card-content">
+              <h3 class="card-number">
+                <span *ngIf="!loadingCataract && !loadingGlaucoma">{{ getTotalPatients() | number }}</span>
+                <span *ngIf="loadingCataract || loadingGlaucoma" class="loading-text">Loading...</span>
+              </h3>
+              <p class="card-label">Total Patients</p>
+              <p class="card-detail">Unique individuals served</p>
+            </div>
+          </div>
+          
+          <div class="overview-card success-rate">
+            <div class="card-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="card-content">
+              <h3 class="card-number">
+                <span *ngIf="!loadingCataract && !loadingGlaucoma">{{ getSystemHealthScore() | number:'1.1-1' }}%</span>
+                <span *ngIf="loadingCataract || loadingGlaucoma" class="loading-text">Loading...</span>
+              </h3>
+              <p class="card-label">Overall Success Rate</p>
+              <p class="card-detail">Combined procedures</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Specialty Dashboards -->
+      <div class="specialties-section">
+        <h2 class="section-title">Specialty Analytics</h2>
+        <div class="specialties-grid">
+          <!-- Cataract Card -->
+          <div class="specialty-card cataract-card" (click)="navigateToCataract()">
+            <div class="specialty-header">
+              <div class="specialty-icon cataract-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5z" stroke="currentColor" stroke-width="2"/>
+                  <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </div>
+              <div class="specialty-title">
+                <h3>Cataract Surgery</h3>
+                <p>Quality metrics and outcomes</p>
+              </div>
+            </div>
+            
+            <div class="specialty-stats" [class.loading]="loadingCataract">
+              <div *ngIf="loadingCataract" class="loading-placeholder">
+                <p>Loading cataract data...</p>
+              </div>
+              
+              <div *ngIf="!loadingCataract && cataractStats" class="stats-content">
+                <div class="stat-row">
+                  <span class="stat-label">Total Procedures:</span>
+                  <span class="stat-value">{{ cataractStats.totalRecords | number }}</span>
+                </div>
+                <div class="stat-row">
+                  <span class="stat-label">Unique Patients:</span>
+                  <span class="stat-value">{{ cataractStats.totalPatients | number }}</span>
+                </div>
+                <div class="stat-row">
+                  <span class="stat-label">Success Rate:</span>
+                  <span class="stat-value success">{{ getCataractSuccessRate() }}</span>
+                </div>
+                <div class="surgery-types" *ngIf="cataractStats.surgeryTypeStats">
+                  <p class="surgery-types-title">Top Surgery Types:</p>
+                  <div class="surgery-type-list">
+                    <span *ngFor="let type of cataractStats.surgeryTypeStats.slice(0, 3)" class="surgery-type-item">
+                      {{ type.surgeryType || 'Unknown' }} ({{ type.count }})
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div *ngIf="!loadingCataract && errorCataract" class="error-placeholder">
+                <p>{{ errorCataract }}</p>
+              </div>
+            </div>
+            
+            <div class="specialty-footer">
+              <span class="view-details">View Detailed Analytics</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+          
+          <!-- Glaucoma Card -->
+          <div class="specialty-card glaucoma-card" (click)="navigateToGlaucoma()">
+            <div class="specialty-header">
+              <div class="specialty-icon glaucoma-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                  <circle cx="12" cy="12" r="6" stroke="currentColor" stroke-width="2"/>
+                  <circle cx="12" cy="12" r="2" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="specialty-title">
+                <h3>Glaucoma Surgery</h3>
+                <p>IOP management and outcomes</p>
+              </div>
+            </div>
+            
+            <div class="specialty-stats" [class.loading]="loadingGlaucoma">
+              <div *ngIf="loadingGlaucoma" class="loading-placeholder">
+                <p>Loading glaucoma data...</p>
+              </div>
+              
+              <div *ngIf="!loadingGlaucoma && glaucomaStats" class="stats-content">
+                <div class="stat-row">
+                  <span class="stat-label">Total Procedures:</span>
+                  <span class="stat-value">{{ glaucomaStats.totalRecords | number }}</span>
+                </div>
+                <div class="stat-row">
+                  <span class="stat-label">Unique Patients:</span>
+                  <span class="stat-value">{{ glaucomaStats.totalPatients | number }}</span>
+                </div>
+                <div class="stat-row">
+                  <span class="stat-label">Success Rate:</span>
+                  <span class="stat-value success">{{ getGlaucomaSuccessRate() }}</span>
+                </div>
+                <div class="stat-row" *ngIf="glaucomaStats.recordsWithComplications !== undefined">
+                  <span class="stat-label">Complications:</span>
+                  <span class="stat-value warning">{{ glaucomaStats.recordsWithComplications | number }}</span>
+                </div>
+                <div class="surgery-types" *ngIf="glaucomaStats.surgeryTypeStats">
+                  <p class="surgery-types-title">Top Surgery Types:</p>
+                  <div class="surgery-type-list">
+                    <span *ngFor="let type of glaucomaStats.surgeryTypeStats.slice(0, 3)" class="surgery-type-item">
+                      {{ type.surgeryType || 'Unknown' }} ({{ type.count }})
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div *ngIf="!loadingGlaucoma && errorGlaucoma" class="error-placeholder">
+                <p>{{ errorGlaucoma }}</p>
+              </div>
+            </div>
+            
+            <div class="specialty-footer">
+              <span class="view-details">View Detailed Analytics</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Quick Actions -->
+      <div class="actions-section">
+        <h2 class="section-title">Quick Actions</h2>
+        <div class="actions-grid">
+          <div class="action-card" (click)="navigateToCataract()">
+            <div class="action-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="action-content">
+              <h4>View Cataract Reports</h4>
+              <p>Detailed procedure analytics</p>
+            </div>
+          </div>
+          
+          <div class="action-card" (click)="navigateToGlaucoma()">
+            <div class="action-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="action-content">
+              <h4>IOP Analysis</h4>
+              <p>Glaucoma pressure trends</p>
+            </div>
+          </div>
+          
+          <div class="action-card">
+            <div class="action-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="action-content">
+              <h4>Trend Analysis</h4>
+              <p>Historical performance</p>
+            </div>
+          </div>
+          
+          <div class="action-card">
+            <div class="action-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 17h6l3 3v-3h2V9h-2M4 4h11v8H9l-3 3v-3H4V4z" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="action-content">
+              <h4>Generate Reports</h4>
+              <p>Export quality metrics</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

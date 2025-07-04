@@ -1,0 +1,272 @@
+<div class="dashboard-container">
+  <app-sidebar [activeRoute]="activeRoute"></app-sidebar>
+  
+  <div class="main-content">
+    <div class="content-header">
+      <div class="header-content">
+        <div>
+          <h1 class="page-title">Cataract Dashboard</h1>
+          <p class="page-subtitle">Monitor and analyze cataract surgery quality metrics</p>
+        </div>
+        <button class="refresh-btn" (click)="refreshData()" [disabled]="loadingStats">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M23 12c0 6.075-4.925 11-11 11s-11-4.925-11-11 4.925-11 11-11c3.038 0 5.789 1.235 7.786 3.232" stroke="currentColor" stroke-width="2"/>
+            <path d="M17 8l3-3-3-3" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Refresh Data
+        </button>
+      </div>
+    </div>
+    
+    <div class="dashboard-content">
+      <!-- Statistics Cards -->
+      <div class="stats-grid">
+        <div class="stat-card" [class.loading]="loadingStats">
+          <div class="stat-icon cataract-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5z" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-number">
+              <span *ngIf="!loadingStats && statistics">{{ statistics.totalRecords | number }}</span>
+              <span *ngIf="loadingStats" class="loading-text">Loading...</span>
+              <span *ngIf="!loadingStats && !statistics && errorStats" class="error-text">Error</span>
+            </h3>
+            <p class="stat-label">Total Procedures</p>
+          </div>
+        </div>
+        
+        <div class="stat-card" [class.loading]="loadingStats">
+          <div class="stat-icon success-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-number">
+              <span *ngIf="!loadingStats && statistics">{{ getSuccessRate() }}</span>
+              <span *ngIf="loadingStats" class="loading-text">Loading...</span>
+              <span *ngIf="!loadingStats && !statistics && errorStats" class="error-text">Error</span>
+            </h3>
+            <p class="stat-label">Success Rate</p>
+          </div>
+        </div>
+        
+        <div class="stat-card" [class.loading]="loadingStats">
+          <div class="stat-icon warning-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-number">
+              <span *ngIf="!loadingStats && statistics">{{ getComplicationsCount() | number }}</span>
+              <span *ngIf="loadingStats" class="loading-text">Loading...</span>
+              <span *ngIf="!loadingStats && !statistics && errorStats" class="error-text">Error</span>
+            </h3>
+            <p class="stat-label">Complications</p>
+          </div>
+        </div>
+        
+        <div class="stat-card" [class.loading]="loadingStats">
+          <div class="stat-icon patients-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-number">
+              <span *ngIf="!loadingStats && statistics">{{ statistics.totalPatients | number }}</span>
+              <span *ngIf="loadingStats" class="loading-text">Loading...</span>
+              <span *ngIf="!loadingStats && !statistics && errorStats" class="error-text">Error</span>
+            </h3>
+            <p class="stat-label">Unique Patients</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Charts Section -->
+      <div class="charts-section">
+        <!-- Visual Acuity Improvement -->
+        <div class="chart-card">
+          <h3 class="chart-title">Visual Acuity Improvement</h3>
+          <div class="chart-content" [class.loading]="loadingProcedures">
+            <div *ngIf="loadingProcedures" class="chart-placeholder">
+              <p>Loading visual acuity data...</p>
+            </div>
+            <div *ngIf="!loadingProcedures && recentProcedures" class="va-metrics">
+              <div class="metric-item">
+                <span class="metric-label">Pre-op BCVA (Average):</span>
+                <span class="metric-value">{{ getVisualAcuityImprovement().avgPreBCVA }}</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Post-op BCVA (Average):</span>
+                <span class="metric-value">{{ getVisualAcuityImprovement().avgPostBCVA }}</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Improvement Rate:</span>
+                <span class="metric-value highlight">{{ getVisualAcuityImprovement().improvementRate }}</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Total Procedures:</span>
+                <span class="metric-value">{{ recentProcedures.length | number }}</span>
+              </div>
+            </div>
+            <div *ngIf="!loadingProcedures && !recentProcedures && errorProcedures" class="chart-placeholder error">
+              <p>{{ errorProcedures }}</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- IOL Type Distribution -->
+        <div class="chart-card">
+          <h3 class="chart-title">IOL Type Distribution</h3>
+          <div class="chart-content" [class.loading]="loadingProcedures">
+            <div *ngIf="loadingProcedures" class="chart-placeholder">
+              <p>Loading IOL type data...</p>
+            </div>
+            <div *ngIf="!loadingProcedures && recentProcedures" class="iol-distribution">
+              <div *ngFor="let item of getTopIOLTypes()" class="distribution-item">
+                <div class="distribution-info">
+                  <span class="iol-type">{{ item.iolType || 'Unknown' }}</span>
+                  <span class="iol-count">{{ item.count | number }}</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" [style.width.%]="(item.count / recentProcedures.length) * 100"></div>
+                </div>
+              </div>
+              <div *ngIf="getTopIOLTypes().length === 0" class="no-data">
+                <p>No IOL data available</p>
+              </div>
+            </div>
+            <div *ngIf="!loadingProcedures && !recentProcedures && errorProcedures" class="chart-placeholder error">
+              <p>{{ errorProcedures }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Surgery Type Analysis -->
+      <div class="surgery-analysis-section" *ngIf="statistics && !loadingStats">
+        <div class="chart-card">
+          <h3 class="chart-title">Surgery Type Distribution</h3>
+          <div class="surgery-distribution">
+            <div *ngFor="let item of getTopSurgeryTypes()" class="distribution-item">
+              <div class="distribution-info">
+                <span class="surgery-type">{{ item.surgeryType || 'Unknown' }}</span>
+                <span class="surgery-count">{{ item.count | number }} ({{ item.percentage | number:'1.1-1' }}%)</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill cataract-gradient" [style.width.%]="item.percentage"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Filters Section -->
+      <div class="filters-section">
+        <div class="filters-card">
+          <h3 class="filters-title">Data Filters</h3>
+          <div class="filters-grid">
+            <div class="filter-group">
+              <label for="dateRange" class="filter-label">Date Range:</label>
+              <select id="dateRange" [(ngModel)]="selectedDateRange" (change)="filterByDateRange()" class="filter-select">
+                <option value="all">All Time</option>
+                <option value="today">Today</option>
+                <option value="week">Last Week</option>
+                <option value="month">Last Month</option>
+                <option value="quarter">Last Quarter</option>
+                <option value="year">Last Year</option>
+              </select>
+            </div>
+            
+            <div class="filter-group">
+              <label for="surgeonType" class="filter-label">Surgeon Type:</label>
+              <select id="surgeonType" [(ngModel)]="selectedSurgeonType" (change)="filterByDateRange()" class="filter-select">
+                <option value="all">All Types</option>
+                <option value="Consultant">Consultant</option>
+                <option value="Senior Resident">Senior Resident</option>
+                <option value="Junior Resident">Junior Resident</option>
+                <option value="Fellow">Fellow</option>
+              </select>
+            </div>
+            
+            <div class="filter-group">
+              <label for="eye" class="filter-label">Eye:</label>
+              <select id="eye" [(ngModel)]="selectedEye" (change)="filterByDateRange()" class="filter-select">
+                <option value="all">Both Eyes</option>
+                <option value="Right">Right Eye</option>
+                <option value="Left">Left Eye</option>
+                <option value="RE">RE</option>
+                <option value="LE">LE</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Recent Procedures Section -->
+      <div class="recent-data-section">
+        <div class="data-card">
+          <div class="data-header">
+            <h3 class="data-title">Recent Procedures</h3>
+            <div class="search-controls">
+              <input 
+                type="text" 
+                [(ngModel)]="searchTerm" 
+                (keyup.enter)="searchProcedures()"
+                placeholder="Search by patient name or MR number..."
+                class="search-input">
+              <button class="search-btn" (click)="searchProcedures()" [disabled]="loadingProcedures">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                  <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <div class="table-container" [class.loading]="loadingProcedures">
+            <div *ngIf="loadingProcedures" class="table-placeholder">
+              <p>Loading recent procedures...</p>
+            </div>
+            
+            <div *ngIf="!loadingProcedures && recentProcedures.length > 0" class="procedures-table">
+              <div class="table-header">
+                <div class="table-cell">Patient</div>
+                <div class="table-cell">MR No.</div>
+                <div class="table-cell">Surgery Date</div>
+                <div class="table-cell">Surgery Type</div>
+                <div class="table-cell">Eye</div>
+                <div class="table-cell">IOL</div>
+                <div class="table-cell">Surgeon Type</div>
+              </div>
+              
+              <div *ngFor="let procedure of recentProcedures" class="table-row">
+                <div class="table-cell" data-label="Patient">{{ procedure.patient_NAME || 'N/A' }}</div>
+                <div class="table-cell" data-label="MR No.">{{ procedure.mr_no || 'N/A' }}</div>
+                <div class="table-cell" data-label="Surgery Date">{{ formatDate(procedure.surgeryDate) }}</div>
+                <div class="table-cell" data-label="Surgery Type">{{ procedure.surgeryType || 'N/A' }}</div>
+                <div class="table-cell" data-label="Eye">{{ procedure.eye || 'N/A' }}</div>
+                <div class="table-cell" data-label="IOL">{{ procedure.lensname || 'N/A' }}</div>
+                <div class="table-cell" data-label="Surgeon Type">{{ procedure.surgeonType || 'N/A' }}</div>
+              </div>
+            </div>
+            
+            <div *ngIf="!loadingProcedures && recentProcedures.length === 0 && !errorProcedures" class="table-placeholder">
+              <p>No procedures found</p>
+            </div>
+            
+            <div *ngIf="!loadingProcedures && errorProcedures" class="table-placeholder error">
+              <p>{{ errorProcedures }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
