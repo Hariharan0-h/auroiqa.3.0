@@ -33,6 +33,16 @@ namespace AuroiQa.Api
                     });
             });
 
+            builder.Services.Configure<IISServerOptions>(options =>
+            {
+                options.MaxRequestBodySize = 50 * 1024 * 1024; // 50MB
+            });
+
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.Limits.MaxRequestBodySize = 50 * 1024 * 1024; // 50MB
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

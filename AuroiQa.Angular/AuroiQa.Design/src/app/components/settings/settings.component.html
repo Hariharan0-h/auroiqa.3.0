@@ -1,0 +1,528 @@
+<!-- settings.component.html -->
+<div class="dashboard-container">
+  <app-sidebar [activeRoute]="activeRoute"></app-sidebar>
+  
+  <div class="main-content">
+    <div class="content-header">
+      <div class="header-content">
+        <div>
+          <h1 class="page-title">Data Entry & Settings</h1>
+          <p class="page-subtitle">Manage data import via EMR integration or manual entry</p>
+        </div>
+        <button *ngIf="selectedMethod" class="back-btn" (click)="goBack()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 12H5m7 7l-7-7 7-7" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Back to Methods
+        </button>
+      </div>
+    </div>
+    
+    <div class="dashboard-content">
+      <!-- Method Selection -->
+      <div class="method-selection" *ngIf="!selectedMethod">
+        <h2 class="section-title">Choose Data Entry Method</h2>
+        <div class="method-grid">
+          <div class="method-card emr-card" (click)="selectMethod('emr')">
+            <div class="method-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" stroke-width="2"/>
+                <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="method-content">
+              <h3>EMR Integration</h3>
+              <p>Connect to your existing Electronic Medical Records system</p>
+              <div class="method-features">
+                <span>• Automatic data sync</span>
+                <span>• Real-time updates</span>
+                <span>• Bulk import</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="method-card manual-card" (click)="selectMethod('manual')">
+            <div class="method-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2"/>
+                <path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="method-content">
+              <h3>Manual Entry</h3>
+              <p>Enter patient data manually using forms</p>
+              <div class="method-features">
+                <span>• Step-by-step forms</span>
+                <span>• Data validation</span>
+                <span>• Individual records</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="method-card bulk-card" (click)="selectMethod('bulk')">
+            <div class="method-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="2"/>
+                <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="method-content">
+              <h3>Bulk Upload</h3>
+              <p>Upload Excel files with multiple patient records</p>
+              <div class="method-features">
+                <span>• Excel templates</span>
+                <span>• Batch processing</span>
+                <span>• Error reporting</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EMR Integration Section -->
+      <div class="emr-section" *ngIf="selectedMethod === 'emr'">
+        <div class="settings-card">
+          <h2 class="section-title">EMR Integration Setup</h2>
+          
+          <div class="form-group">
+            <label for="connectionString" class="form-label">EMR Database Connection String:</label>
+            <textarea 
+              id="connectionString"
+              [(ngModel)]="emrConnectionString"
+              placeholder="Server=your_server;Database=your_db;User Id=your_user;Password=your_password;..."
+              class="form-textarea"
+              rows="3"></textarea>
+            <p class="form-help">Enter your EMR database connection string. This will be securely stored locally.</p>
+          </div>
+          
+          <div class="button-group">
+            <button 
+              class="test-btn"
+              (click)="testEmrConnection()"
+              [disabled]="testingConnection || !emrConnectionString.trim()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              {{ testingConnection ? 'Testing...' : 'Test Connection' }}
+            </button>
+          </div>
+          
+          <div class="connection-result" *ngIf="connectionTestResult" 
+               [class.success]="connectionTestResult.includes('successful')"
+               [class.error]="connectionTestResult.includes('failed')">
+            {{ connectionTestResult }}
+          </div>
+          
+          <div class="sync-section" *ngIf="connectionTestResult.includes('successful')">
+            <h3 class="subsection-title">Data Synchronization</h3>
+            
+            <div class="data-type-selector">
+              <label class="radio-label">
+                <input type="radio" [(ngModel)]="selectedDataType" value="cataract">
+                <span class="radio-custom"></span>
+                Cataract Surgery Data
+              </label>
+              <label class="radio-label">
+                <input type="radio" [(ngModel)]="selectedDataType" value="glaucoma">
+                <span class="radio-custom"></span>
+                Glaucoma Surgery Data
+              </label>
+            </div>
+            
+            <button 
+              class="sync-btn"
+              (click)="syncFromEmr()"
+              [disabled]="testingConnection">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M23 12c0 6.075-4.925 11-11 11s-11-4.925-11-11 4.925-11 11-11c3.038 0 5.789 1.235 7.786 3.232" stroke="currentColor" stroke-width="2"/>
+                <path d="M17 8l3-3-3-3" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              {{ testingConnection ? 'Syncing...' : 'Start Sync' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Manual Entry Section -->
+      <div class="manual-section" *ngIf="selectedMethod === 'manual'">
+        <div class="settings-card">
+          <h2 class="section-title">Manual Data Entry</h2>
+          
+          <div class="data-type-selector">
+            <label class="radio-label">
+              <input type="radio" [(ngModel)]="selectedDataType" value="cataract">
+              <span class="radio-custom"></span>
+              Cataract Surgery Record
+            </label>
+            <label class="radio-label">
+              <input type="radio" [(ngModel)]="selectedDataType" value="glaucoma">
+              <span class="radio-custom"></span>
+              Glaucoma Surgery Record
+            </label>
+          </div>
+          
+          <!-- Cataract Form -->
+          <div class="entry-form" *ngIf="selectedDataType === 'cataract'">
+            <h3 class="form-title">Cataract Surgery Record</h3>
+            
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Patient Name *</label>
+                <input type="text" [(ngModel)]="cataractForm.PATIENT_NAME" class="form-input" required>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">MR Number *</label>
+                <input type="text" [(ngModel)]="cataractForm.Mr_no" class="form-input" required>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Surgery Date</label>
+                <input type="date" [(ngModel)]="cataractForm.SurgeryDate" class="form-input">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Age</label>
+                <input type="number" [(ngModel)]="cataractForm.Age" class="form-input" min="0" max="150">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Sex</label>
+                <select [(ngModel)]="cataractForm.SEX" class="form-select">
+                  <option value="">Select...</option>
+                  <option value="M">Male</option>
+                  <option value="F">Female</option>
+                  <option value="O">Other</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Eye</label>
+                <select [(ngModel)]="cataractForm.Eye" class="form-select">
+                  <option value="">Select...</option>
+                  <option value="Right">Right</option>
+                  <option value="Left">Left</option>
+                  <option value="RE">RE</option>
+                  <option value="LE">LE</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Surgery Type *</label>
+                <input type="text" [(ngModel)]="cataractForm.SurgeryType" class="form-input" required>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Surgeon Type</label>
+                <select [(ngModel)]="cataractForm.SurgeonType" class="form-select">
+                  <option value="">Select...</option>
+                  <option value="Consultant">Consultant</option>
+                  <option value="Senior Resident">Senior Resident</option>
+                  <option value="Junior Resident">Junior Resident</option>
+                  <option value="Fellow">Fellow</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Lens Name</label>
+                <input type="text" [(ngModel)]="cataractForm.Lensname" class="form-input">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Model Name</label>
+                <input type="text" [(ngModel)]="cataractForm.Modelname" class="form-input">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">IOL Power</label>
+                <input type="text" [(ngModel)]="cataractForm.IolPower" class="form-input">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Anesthesia</label>
+                <input type="text" [(ngModel)]="cataractForm.Anesthesia" class="form-input">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Pre-op BCVA</label>
+                <input type="text" [(ngModel)]="cataractForm.Pre_BCVA" class="form-input">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Pre-op UCVA</label>
+                <input type="text" [(ngModel)]="cataractForm.Pre_UCVA" class="form-input">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Follow-up BCVA</label>
+                <input type="text" [(ngModel)]="cataractForm.FollowupBCVA" class="form-input">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Follow-up UCVA</label>
+                <input type="text" [(ngModel)]="cataractForm.FollowupUCVA" class="form-input">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Glaucoma Form -->
+          <div class="entry-form" *ngIf="selectedDataType === 'glaucoma'">
+            <h3 class="form-title">Glaucoma Surgery Record</h3>
+            
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Patient Name *</label>
+                <input type="text" [(ngModel)]="glaucomaForm.Patient_name" class="form-input" required>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">MR Number *</label>
+                <input type="text" [(ngModel)]="glaucomaForm.Mr_no" class="form-input" required>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Surgery Date</label>
+                <input type="date" [(ngModel)]="glaucomaForm.Surgery_date" class="form-input">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Age</label>
+                <input type="number" [(ngModel)]="glaucomaForm.Age" class="form-input" min="0" max="150">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Sex</label>
+                <select [(ngModel)]="glaucomaForm.Sex" class="form-select">
+                  <option value="">Select...</option>
+                  <option value="M">Male</option>
+                  <option value="F">Female</option>
+                  <option value="O">Other</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Eye Part</label>
+                <select [(ngModel)]="glaucomaForm.Eye_part" class="form-select">
+                  <option value="">Select...</option>
+                  <option value="Right">Right</option>
+                  <option value="Left">Left</option>
+                  <option value="RE">RE</option>
+                  <option value="LE">LE</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Surgery Type *</label>
+                <input type="text" [(ngModel)]="glaucomaForm.Surgery_type" class="form-input" required>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Surgeon Type</label>
+                <select [(ngModel)]="glaucomaForm.Surgeon_type" class="form-select">
+                  <option value="">Select...</option>
+                  <option value="Consultant">Consultant</option>
+                  <option value="Senior Resident">Senior Resident</option>
+                  <option value="Junior Resident">Junior Resident</option>
+                  <option value="Fellow">Fellow</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Pre-operative IOP</label>
+                <input type="number" [(ngModel)]="glaucomaForm.Pre_operative_iop" class="form-input" min="0" max="100">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Post-operative IOP</label>
+                <input type="number" [(ngModel)]="glaucomaForm.Post_operative_iop" class="form-input" min="0" max="100">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Anesthesia</label>
+                <input type="text" [(ngModel)]="glaucomaForm.Anesthesia" class="form-input">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Pre-op BCVA</label>
+                <input type="text" [(ngModel)]="glaucomaForm.Pre_bcva" class="form-input">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Pre-op UCVA</label>
+                <input type="text" [(ngModel)]="glaucomaForm.Pre_ucva" class="form-input">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Follow-up BCVA</label>
+                <input type="text" [(ngModel)]="glaucomaForm.Followup_bcva" class="form-input">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Follow-up UCVA</label>
+                <input type="text" [(ngModel)]="glaucomaForm.Followup_ucva" class="form-input">
+              </div>
+              
+              <div class="form-group checkbox-group">
+                <label class="checkbox-label">
+                  <input type="checkbox" [(ngModel)]="glaucomaForm.Is_active">
+                  <span class="checkbox-custom"></span>
+                  Active Record
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-error" *ngIf="formError">{{ formError }}</div>
+          
+          <div class="form-actions">
+            <button 
+              class="save-btn"
+              (click)="saveManualEntry()"
+              [disabled]="savingForm || !isFormValid()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" stroke="currentColor" stroke-width="2"/>
+                <polyline points="17,21 17,13 7,13 7,21" stroke="currentColor" stroke-width="2"/>
+                <polyline points="7,3 7,8 15,8" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              {{ savingForm ? 'Saving...' : 'Save Record' }}
+            </button>
+            
+            <button class="reset-btn" (click)="resetForms()" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 12a9 9 0 019-9 9.75 9.75 0 016.74 2.74L21 8" stroke="currentColor" stroke-width="2"/>
+                <path d="M21 3v5h-5M21 12a9 9 0 01-9 9 9.75 9.75 0 01-6.74-2.74L3 16" stroke="currentColor" stroke-width="2"/>
+                <path d="M8 16l-5 5v-5h5" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Reset Form
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bulk Upload Section -->
+      <div class="bulk-section" *ngIf="selectedMethod === 'bulk'">
+        <div class="settings-card">
+          <h2 class="section-title">Bulk Data Upload</h2>
+          
+          <div class="data-type-selector">
+            <label class="radio-label">
+              <input type="radio" [(ngModel)]="selectedDataType" value="cataract">
+              <span class="radio-custom"></span>
+              Cataract Surgery Data
+            </label>
+            <label class="radio-label">
+              <input type="radio" [(ngModel)]="selectedDataType" value="glaucoma">
+              <span class="radio-custom"></span>
+              Glaucoma Surgery Data
+            </label>
+          </div>
+          
+          <div class="upload-steps">
+            <div class="step">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <h4>Download Template</h4>
+                <p>Download the Excel template for {{ selectedDataType }} data</p>
+                <button class="download-btn" (click)="downloadTemplate()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  Download {{ selectedDataType | titlecase }} Template
+                </button>
+              </div>
+            </div>
+            
+            <div class="step">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <h4>Fill Template</h4>
+                <p>Fill the downloaded template with your patient data</p>
+                <div class="template-tips">
+                  <span>• Keep column headers unchanged</span>
+                  <span>• Use the same date format (YYYY-MM-DD)</span>
+                  <span>• Required fields are marked with *</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="step">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <h4>Upload File</h4>
+                <p>Select and upload your completed Excel file</p>
+                
+                <div class="file-upload">
+                  <input 
+                    type="file" 
+                    (change)="onFileSelected($event)"
+                    accept=".xlsx,.xls"
+                    class="file-input"
+                    id="fileInput">
+                  <label for="fileInput" class="file-label">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="2"/>
+                      <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2"/>
+                      <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2"/>
+                      <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2"/>
+                      <polyline points="10,9 9,9 8,9" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    Choose Excel File
+                  </label>
+                </div>
+                
+                <div class="selected-file" *ngIf="selectedFile">
+                  <span class="file-name">{{ selectedFile.name }}</span>
+                  <span class="file-size">({{ (selectedFile.size / 1024 / 1024) | number:'1.2-2' }} MB)</span>
+                </div>
+                
+                <div class="upload-error" *ngIf="uploadError">{{ uploadError }}</div>
+                
+                <button 
+                  class="upload-btn"
+                  (click)="uploadBulkData()"
+                  [disabled]="!selectedFile || uploadingFile">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  {{ uploadingFile ? 'Uploading...' : 'Upload Data' }}
+                </button>
+                
+                <div class="upload-progress" *ngIf="uploadingFile">
+                  <div class="progress-bar">
+                    <div class="progress-fill" [style.width.%]="uploadProgress"></div>
+                  </div>
+                  <span class="progress-text">{{ uploadProgress }}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Upload Results -->
+          <div class="upload-results" *ngIf="uploadResults">
+            <h4>Upload Results</h4>
+            <div class="results-summary">
+              <div class="result-item success">
+                <span class="result-label">Successfully Imported:</span>
+                <span class="result-value">{{ uploadResults.successCount }}</span>
+              </div>
+              <div class="result-item error" *ngIf="uploadResults.errorCount > 0">
+                <span class="result-label">Errors:</span>
+                <span class="result-value">{{ uploadResults.errorCount }}</span>
+              </div>
+            </div>
+            
+            <div class="error-details" *ngIf="uploadResults.errors && uploadResults.errors.length > 0">
+              <h5>Error Details:</h5>
+              <div class="error-list">
+                <div *ngFor="let error of uploadResults.errors" class="error-item">
+                  <span class="error-row">Row {{ error.row }}:</span>
+                  <span class="error-message">{{ error.message }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
